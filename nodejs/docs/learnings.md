@@ -1,5 +1,9 @@
 ## Error handling in NodeJS Application 
-Refer to this [youtube video](https://www.youtube.com/watch?v=EUYnERcOGpA) which talks about the best practices to be followed for the error handling. 
+Refer to the following resources to learn about the error handling in ExpessJs 
+* [youtube video 1](https://www.youtube.com/watch?v=EUYnERcOGpA) which talks about the best practices to be followed for the error handling. 
+* [youtube video 2](https://www.youtube.com/watch?v=udvGMDVyz84)
+* [Medium Blog 1](https://medium.com/@sajaldewangan/mastering-40x-error-handling-in-node-js-with-typescript-a-peaceful-approach-eedd8eb99c41)
+
 
 By the way the detailed explanation with example code examples is as follows: 
 ## Step 1 : Error Handling in Node.js + TypeScript Backend
