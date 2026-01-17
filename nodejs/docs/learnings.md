@@ -206,3 +206,52 @@ console.error({
   timestamp: new Date().toISOString(),
 });
 ```
+
+Please note the following about the error handling in express.js 
+* Async function exceptions are not automatically handled in case of the express 5 and older
+* For other functions the express handles the exception automatically in case of express 5
+* In case of express 6 all function's exception are automatically handled. 
+* But by default the express returns the complete html and stack trace to the client. This is not ideal for the client. 
+* Hence we need to have the custom error handling for this purpose. Using the custom 
+error handling we will be able to send the correct proper message with proper 
+status code and error message. 
+* Even if we do not use the next in this case then also the global exception handler 
+will be called. 
+* The exception if occurs then if it is not handled then it will bubble up and it 
+will reach to the global handler itself. 
+* Mainly since the business logics will be present in case of the controller as well as 
+in the services too. so we will let the error bubble up until and unless we want to 
+modify something in the error. In that cas we will catch the error and then throw it again after modifying it. 
+* In summary we will use the try catch whereever we feel we need to modify the error 
+or we want to show some specific messages to the user. 
+
+The overview of error traversing is upwards as shown below. 
+``` bash
+Service throws error
+  ↓
+Controller (async)
+  ↓
+express - 6
+  ↓
+Global error middleware
+  ↓
+HTTP 500 response
+```
+So overall "Only catch errors if you can do something meaningful with them."
+
+Use this when:
+You don’t want DB internals leaking to clients
+You want consistent messages
+Example 1: Business Meaning (Recommended)
+``` ts
+static async createTodo(title: string) {
+  try {
+    return await prisma.todo.create({ data: { title } });
+  } catch {
+    throw new ApiError(
+      ErrorCodes.INTERNAL_ERROR,
+      'Unable to create todo at this time'
+    );
+  }
+}
+```
