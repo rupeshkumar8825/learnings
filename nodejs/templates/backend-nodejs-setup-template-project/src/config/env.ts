@@ -4,6 +4,10 @@
 import z from "zod"
 
 // all the environment variables will be kept here for this purpose
+// this basically make sures that all the necessary environment variables 
+// should be defined here. 
+// If the zod marks a field as necessary then the app will crash at the 
+// startup itself 
 const envSchema = z.object(
     {
         DATABASE_URL : z.string(), 

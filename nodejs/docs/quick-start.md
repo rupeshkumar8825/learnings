@@ -136,12 +136,12 @@ app.listen(PORT, () => {
 });
 ```
 
-
 ### src/app.ts
 ``` ts
 import express from "express";
 
 const app = express();
+
 
 app.use(express.json());
 
