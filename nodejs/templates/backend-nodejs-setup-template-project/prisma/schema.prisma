@@ -23,3 +23,60 @@ model Todo {
   updatedAt DateTime @updatedAt
 }
 
+
+/*
+* Please note that the below database tables are defined just for example and 
+just for learning purpose. This example will consists how to handle the different 
+relations in the database. Meaning how to establish relationship between the 
+different tables. Either it being the one to many relation and many to one relation
+*/
+
+// user model schema 
+model User{
+  id Int @id @default(autoincrement())
+  name String? 
+  email String
+  password String? // this is null because we can faciliate the login via gmail too
+  created_at DateTime @default(now())
+
+  // all relations related stuff comes here 
+  // we have one to many relationship with the post. Meaning one user can have multiple
+  // posts. So as far as database practices we will store the user_id in the post itself
+  post  Post[]
+  // there can be multiple comments which user can make. 
+  // hence we need to complete the relation here 
+  comment Comment[]
+}
+
+// post model schema 
+model Post {
+  id Int @id @default(autoincrement())
+  // post will be created by a user hence we need to define the relationship with the user
+  user User @relation(fields: [user_id], references: [id])
+  user_id Int
+  title String
+  description String
+  comment_count BigInt @default(0)
+  created_at DateTime @default(now())
+
+  // defining the relations here 
+  // since there can be multiple comments for a given post hence we need to complete
+  // the relation here
+  comment Comment[]
+}
+
+// creating the comment model 
+model Comment {
+  id String @id @default(uuid())
+  // this comment will belong to only a single post itself 
+  post Post @relation(fields: [post_id], references: [id])
+  post_id Int
+
+  // this comment will be made by some user itself we need to define the relation
+  // for that as well
+  user User @relation(fields: [user_id], references: [id])
+  user_id Int
+
+  comment String
+  created_at DateTime @default(now())
+}
