@@ -16,13 +16,17 @@ Let’s try to write code to do an I/O heavy operation -
 Open repl.it
 Create a file in there (a.txt) with some text inside
 Write the code to read a file synchronously
+
+``` js
 const fs = require("fs");
 
 const contents = fs.readFileSync("a.txt", "utf-8");
 console.log(contents);
+```
 
 Create another file (b.txt)
 Write the code to read the other file synchronously
+```js 
 const fs = require("fs");
 
 const contents = fs.readFileSync("a.txt", "utf-8");
@@ -30,9 +34,8 @@ console.log(contents);
 
 const contents2 = fs.readFileSync("b.txt", "utf-8");
 console.log(contents2);
+```
 
- 
-💡
 What is wrong in this code above?
 
 
