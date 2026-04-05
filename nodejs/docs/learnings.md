@@ -1,4 +1,42 @@
-## Error handling in NodeJS Application 
+# Synchronous vs Asynchronous Code Execution 
+In JS there are two ways in which the JS code could execute. When the the code is executed line by line, in the order it's written this is called as the Synchronous code execution. Each operation waits for the previous one to complete before moving on to the next one. 
+
+Input/Output(I/O) heavy oeprations refer to tasks in a compute program that involve a lot of data transfer between the program and external systems or devices. These operations usually require waiting for data to be read from or written to sources like disks, networks, databases or other external devices, which can be time-consuming compared to in-memory computations. 
+
+
+Examples of I/O heavy operations: 
+1. Reading a file 
+2. Starting a clock 
+3. HTTP Requests. 
+
+
+**Note** We’re going to introduce imports/requires next. A require statement lets you import code/functions export from another file/module.
+ 
+Let’s try to write code to do an I/O heavy operation - 
+Open repl.it
+Create a file in there (a.txt) with some text inside
+Write the code to read a file synchronously
+const fs = require("fs");
+
+const contents = fs.readFileSync("a.txt", "utf-8");
+console.log(contents);
+
+Create another file (b.txt)
+Write the code to read the other file synchronously
+const fs = require("fs");
+
+const contents = fs.readFileSync("a.txt", "utf-8");
+console.log(contents);
+
+const contents2 = fs.readFileSync("b.txt", "utf-8");
+console.log(contents2);
+
+ 
+💡
+What is wrong in this code above?
+
+
+# Error handling in NodeJS Application 
 Refer to the following resources to learn about the error handling in ExpessJs 
 * [youtube video 1](https://www.youtube.com/watch?v=EUYnERcOGpA) which talks about the best practices to be followed for the error handling. 
 * [youtube video 2](https://www.youtube.com/watch?v=udvGMDVyz84)
@@ -311,3 +349,58 @@ model Comment {
   created_at DateTime @default(now())
 }
 ```
+
+
+Consider the below table schema defined in the SQL itself. 
+``` sql
+id UUID DEFAULT gen_random_uuid() PRIMARY KEY, 
+name VARCHAR(100) NOT NULL CHECK (char_length(name) > 3), 
+email VARCHAR(100) UNIQUE NOT NULL, 
+password TEXT NOT NULL, 
+role VARCHAR(10) DEFAULT 'User' CHECK (role in ('User', 'Admin')), 
+avatar JSONB DEFAULT NULL, 
+reset_password_token TEXT DEFAULT NULL, 
+reset_password_expires TIMESTAMP DEFAULT NULL,
+created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+```
+Now the alaternative prisma model would be as follows: 
+``` bash
+model User {
+  id                     String   @id @default(uuid()) @db.Uuid
+  name                   String   @db.VarChar(100)
+  email                  String   @unique @db.VarChar(100)
+  password               String
+  role                   Role     @default(User)
+  avatar                 Json?
+  resetPasswordToken     String?
+  resetPasswordExpires   DateTime?
+  createdAt              DateTime @default(now())
+
+  @@check(length(name) > 3)
+}
+
+enum Role {
+  User
+  Admin
+}
+```
+
+# SQL Injection 
+Usually we write the sql queries in the following format: 
+``` ts
+const users = await database.query(
+    `INSERT INTO users (name, email, password) VALUES (${name}, ${email}, ${password})`, 
+    [name, email, password]
+)
+```
+In the above case there is a risk of SQL INJECTION. Meaning consider that the client
+sends the name value as "; delete * from users;". Then in this case the above query 
+will delete the complete table. 
+To avoid this we should write the query as shown below : 
+``` ts
+const users = await database.query(
+    `INESRT INTO users (name, email, password) VALUES ($1, $2, $3) RETURNING *`, [name, email, password]
+) 
+```
+This way the postgres will know that these are parameters and they are not separate
+queries. This is a proper way to avoid the sql injection related things.
