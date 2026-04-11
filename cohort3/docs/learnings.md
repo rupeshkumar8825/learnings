@@ -36,8 +36,164 @@ const contents2 = fs.readFileSync("b.txt", "utf-8");
 console.log(contents2);
 ```
 
+
+
+
+
 What is wrong in this code above?
 
+
+# PROMISE In JS
+Promise class gives you a promise, that I will return you something in the future. Similar to how setTimeout(fn, 3000) calls the fn in future. Meaning we can always use either : 
+* Callback based approach 
+* Promise based approach. 
+Calling a promise is easy, defining our own promise is where things get hard. 
+
+A promise in JavaScript is an object that represents the eventual completion or failure of an asynchronous operation and its resulting value. Promises are used to handle the asynchronous operations more effectively than traditional callback functions, providing a cleaner and more manageable way to deal with code that executes asynchronously, such as API calls, file I/O, or timers. 
+
+The example of a promisied function is as follows : 
+```js 
+// this is the promisified version of the settimeout function implementation
+// returns an object of the promise class
+function setTimeoutPromisified(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+// this is callback function which needs to be called once 
+// the promise is resolved
+function callback()
+{
+  console.log("3 seconds have passed")
+}
+
+setTimeoutPromisified(3000).then(callback)
+
+```
+
+Meaning the promises are just a syntactically superior way to write instead of callbacks. 
+Whenever the resolve function is called then it will call the callback function which is passed in the .then(callback) function part. 
+
+```js
+function random(resolve) { // note that resolve is also a function
+  // after some point call the resolve 
+  // resolve()
+
+  // meaning please call the resolve after 3 seconds
+  setTimeout(resolve, 3000);
+}
+
+let p = new Promise(random);
+
+function callback()
+{
+  console.log("promise resolved");
+}
+
+
+p.then(callback);
+```
+There are 3 components of the promises : 
+1. The function which returns the promise. 
+2. The function which is passed as an argument to the promise() which will eventually call the resolve at some condition 
+3. And then the callback function that we need to call once the promise is resolved. 
+
+
+Lets look at the another example use case of the promises. Lets write the function to implement the promisified version of the readfile function 
+
+``` js
+const fs = require("fs")
+
+function readFile(resolve)
+{
+  fs.readFile("a.out", "utf-8", function(err, data){
+    resolve(data)
+  })
+}
+
+
+function readFilePromisifiedVersion()
+{
+  return new Promise(readFile)
+}
+
+
+
+// this is the callback function
+function callback(contents)
+{
+  console.log("The contents of the files are : ", contents)
+}
+
+
+readFilePromisifiedVersion().then(callback)
+
+
+```
+So a promisified version of a given function can be implemented by wrapping its actual functionality inside the new Promise()
+
+
+# Callback Hell vs Promises 
+Lets see an example of callback hell. Consider a requirement where we need to print  "hi" after 1 seocond. Then once the "hi" is printed then after 3 seconds print "hello". and after "hello" is printed then after 4 seconds print the "hello there". 
+
+``` js 
+setTimeout(function () {
+  console.log("hi")
+  setTimeout(function() {
+      console.log("hello")
+      setTimeout(function(){
+        console.log("hello there")
+      }, 4000)
+  }, 3000)
+}, 1000)
+
+```
+The above expression could be simplified as following without having the callback and also without having the promises too. 
+
+```js
+
+function step3Done(){
+  console.log("hello there")
+}
+
+function step2Done(){
+  console.log("hello");
+  setTimeout(step3Done, 4000);
+}
+
+function step1Done(){
+  console.log("hi");
+  setTimeout(step2Done, 3000);
+}
+
+setTimeout(step1Done, 1000);
+
+```
+Now using the promise chaining we can write some logics as follows: 
+``` js 
+
+function setTimeout(resolve, ms)
+{
+  setTimeout(resolve, ms)
+}
+
+// lets implement the promisified version of the settimeout 
+setTimeoutPromisified(ms){
+  return new Promise(setTimeout)
+}
+
+
+setTimeoutPromisified(1000)
+.then(function () {
+  console.log("hi")
+  return setTimeoutPromisified(3000)
+}).then(function () {
+  console.log("hello")
+  return setTimeoutPromisifed(5000)
+})
+.then(function () {
+    console.log("hello there")
+})
+```
 
 # Error handling in NodeJS Application 
 Refer to the following resources to learn about the error handling in ExpessJs 
