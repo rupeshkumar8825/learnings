@@ -117,10 +117,3 @@ Below are some of the common headers :
 1. Authorization :- sends the user auth information. 
 2. Content-Type :- type of information client is sending (json, binary etc)
 3. Referer :- which URL is this request coming from. 
-
-
-
-
-
-
-

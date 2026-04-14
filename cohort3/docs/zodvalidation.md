@@ -183,7 +183,7 @@ const validate = (schema) => (req, res, next) => {
   const result = schema.safeParse(req.body);
 
   if (!result.success) {
-    return res.status(400).json({
+    return res.status(400).json({   
       message: "Validation failed",
       errors: formatZodError(result.error),
     });
@@ -235,3 +235,39 @@ module.exports = {
   validate,
 };
 ```
+
+# Generic Middleware that uses the zod validation 
+``` ts 
+
+// src/middleware/validationMiddleware.ts
+import { Request, Response, NextFunction } from 'express';
+import { z, ZodError } from 'zod';
+
+import { StatusCodes } from 'http-status-codes';q
+
+export function validateData(schema: z.ZodObject<any, any>) {
+  return (req: Request, res: Response, next: NextFunction) => {
+    try {
+      schema.parse(req.body);
+      next();
+    } catch (error) {
+      if (error instanceof ZodError) {
+      const errorMessages = error.errors.map((issue: any) => ({
+            message: `${issue.path.join('.')} is ${issue.message}`,
+        }))
+        res.status(StatusCodes.BAD_REQUEST).json({ error: 'Invalid data', details: errorMessages });
+      } else {
+        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: 'Internal Server Error' });
+      }
+    }
+  };
+}
+
+```
+
+# References 
+Following are very good list of resources to refer for learning about the zod; 
+* [Blog Post 1](https://dev.to/osalumense/validating-request-data-in-expressjs-using-zod-a-comprehensive-guide-3a0j) gives the complete implementation of the zod rules and then validate middlewares as well. 
+* ChatGPT 
+* [Blog Post 2](https://medium.com/@enescidem/jwt-authentication-user-management-with-typescript-express-bcac5ed28248):- This has the detailed explanation about the JWT authentication implementation using the auth middleware. This also explains how we can store the userId in request header and then pass it to the routes layer for this purpose. 
+
