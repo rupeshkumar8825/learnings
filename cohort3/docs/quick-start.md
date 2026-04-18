@@ -345,3 +345,271 @@ http://localhost:5555
 Ensure .env is ignored in .gitignore.
 .env
 Prisma schema and migration files should be committed to Git.
+
+
+
+# Setting up PostgreSQL locally 
+Generally for the projects we take the cloud hosted posgresql server. But for that we need to take the free tier. Instead of doing that, for better learning purposes, we should try setting up postgresql locally and then we should use that for our local projects. 
+
+This section tells about how to setup the postgesql locally on developers laptop. 
+
+## Steps to setting it up
+Following are the detail steps to be able to download the postgres and also the pgadmin GUI for easy interaction with our database for this purpose. 
+
+### 1. Install PostgreSQL
+Mac (your case)
+``` bash
+brew install postgresql
+brew services start postgresql
+```
+
+Verify:
+``` bash
+psql --version
+```
+
+
+### 2. Setup Database & User
+Open terminal:
+``` bash
+psql postgres
+```
+
+Inside psql:
+``` SQL
+CREATE ROLE rupesh WITH LOGIN PASSWORD 'password123';
+ALTER ROLE rupesh CREATEDB;
+
+CREATE DATABASE myapp_db OWNER rupesh;
+```
+
+
+Exit: In order to exit from the postgres terminal we can use the following command.
+``` bash
+\q
+```
+
+
+### 3. Install pgAdmin (GUI)
+Download from official site:
+👉 https://www.pgadmin.org/download/
+
+Configure pgAdmin
+Step 1: Open pgAdmin
+You’ll set a master password (this is for pgAdmin, not DB).
+
+Step 2: Add Server
+Right-click → Register → Server
+Fill:
+General tab
+Name: Local Postgres
+Connection tab
+Host: localhost
+Port: 5432
+Username: rupesh
+Password: password123
+Click Save
+
+
+### 4. Setup Prisma in Your Project
+Inside your Node.js project:
+``` bash
+npm init -y
+npm install prisma --save-dev
+npm install @prisma/client
+```
+
+Initialize Prisma
+``` bash
+npx prisma init
+```
+This creates:
+``` bash
+prisma/
+  schema.prisma
+.env
+```
+
+### 5. Configure Database Connection
+Open .env:
+``` bash
+DATABASE_URL="postgresql://rupesh:password123@localhost:5432/myapp_db"
+```
+
+### 6. Define Your First Model
+Open prisma/schema.prisma
+``` ts
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        Int      @id @default(autoincrement())
+  name      String
+  email     String   @unique
+  createdAt DateTime @default(now())
+}
+
+```
+
+
+### 7. Run Migration (Creates Tables)
+``` bash
+npx prisma migrate dev --name init
+```
+
+This does 3 things:
+Creates table in PostgreSQL
+Generates Prisma client
+Tracks migration
+
+Verify in pgAdmin
+
+Go to:
+Servers → Databases → myapp_db → Schemas → public → Tables
+You’ll see User table 🎯
+
+
+### 8. Use Prisma in Code
+Create a simple file:
+``` ts
+import { PrismaClient } from '@prisma/client';
+
+const prisma = new PrismaClient();
+
+async function main() {
+  const user = await prisma.user.create({
+    data: {
+      name: "Rupesh",
+      email: "rupesh@example.com",
+    },
+  });
+
+  console.log(user);
+}
+
+main();
+```
+
+Run:
+``` bash
+npx ts-node index.ts
+```
+
+
+### 9. Open Prisma Studio (GUI for Data)
+``` bash
+npx prisma studio
+``` 
+This gives you a mini admin panel.
+
+### 10. Workflow You Should Follow
+This is important for real projects:
+Step 1: Update schema
+``` ts
+model Post {
+  id    Int    @id @default(autoincrement())
+  title String
+}
+```
+
+Step 2: Run migration
+``` bash
+npx prisma migrate dev --name add_post
+```
+
+Step 3: Use in code
+
+
+### 11. Common Errors (You WILL Face These)
+❌ "P1001: Can't reach database"
+PostgreSQL not running
+❌ Authentication failed
+Wrong username/password
+❌ Port issue
+Ensure 5432
+❌ Prisma not updated
+npx prisma generate
+
+
+
+### 12. Common PSQL commands to be used to get started. 
+Use psql:
+``` bash
+psql -U postgres -h localhost -p 5432
+```
+
+It will prompt:
+Password: postgres
+If successful, you’ll see:
+``` bash
+postgres=#
+```
+
+That means you're inside the PostgreSQL shell.
+#### 2. List All Databases
+Inside psql, run:
+``` bash
+\l
+or
+\list
+```
+
+You’ll see something like:
+   Name      |  Owner
+-------------+----------
+ postgres    | postgres
+ myapp_db    | postgres
+ template0   | postgres
+ template1   | postgres
+#### 3. Connect to a Specific Database
+``` bash
+\c myapp_db
+```
+After this, prompt changes:
+``` bash
+myapp_db=#
+```
+Now you're inside that database.
+
+#### 4. List All Tables in That Database
+``` bash
+\dt
+``` 
+
+Example output:
+ Schema |  Name   | Type  | Owner
+--------+---------+-------+--------
+ public | User    | table | postgres
+
+
+#### 5. Describe a Table (Very Useful)
+``` bash
+\d User
+``` 
+
+Shows columns, types, constraints.
+#### 6. See Data Inside Table
+``` bash 
+SELECT * FROM "User";
+``` 
+⚠️ Important:
+Prisma uses "User" (capital U)
+PostgreSQL is case-sensitive when quoted
+#### 7. Full Flow (Quick Summary)
+``` bash
+psql -U postgres -h localhost -p 5432
+``` 
+Then inside:
+``` bash
+\l              -- list databases
+\c myapp_db     -- connect to db
+\dt             -- list tables
+\d User         -- describe table
+SELECT * FROM "User";
+```

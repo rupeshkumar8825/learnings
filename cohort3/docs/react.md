@@ -103,6 +103,8 @@ There are different life cycle events which are :
 2. Re-Rendering
 3. Unmounting. 
 
+TODO :- Need to explain the above things one by one. 
+
 
 ## useState
 useState is a Hook that lets you add state to functional components. It returns an array with the current state and a function to update it. That means it defines the state of the component. Whenever the states changes then we will hvae 
@@ -124,12 +126,20 @@ function Counter () {
     const [count, setCount] = useState(0);
 
     useEffect(function () {
+        // this will run only when the component renders for the first time
         setInterval(function () {
-            setCount(count + 1)
+            setCount(function(count){
+                return count + 1;
+            })
         }, 1000);
     }, [])
 }
 ```
+
+Please note that we cannot use the state variable inside the useEffect if that partcular state variable is not present in the dependency array for this purpose. 
+
+TODO :- Explain the relation between the useEffect() hook and different lifecycle of the react components. Also need to mention about the conditional rendering, cleanup, dependency array and unmounting in case of useEffect hook for this purpose. 
+
 
 ## VDOM 
 Write some thing here about the virtual dom
@@ -155,5 +165,33 @@ We can do so using the following methods :
 
 ### References 
 * [Vite Official Documentation](https://vite.dev/guide/)
+
+
+# Children Component
+This is also known as the wrapper component. This is a better to pass the component as props.  The example is as follows: 
+
+``` jsx
+
+function App(){
+    return <div style={{display : "flex"}}>
+    <Card>
+        <div style={{color : "green"}}>
+            What do you want to post <br></br>
+            <input type={"text"}/>
+        </div>
+    </Card>
+    </div>
+}
+
+
+// now lets pass the html inside the <Card> component as props and then use it for this 
+// purpose
+function Card({children}){
+    return <div style={{background: "red", borderRadius: 10, color: "white", padding: 10, margin: 10}}>
+    {children}
+    </div>
+}
+
+```
 
 
