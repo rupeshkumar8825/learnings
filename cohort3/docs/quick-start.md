@@ -613,3 +613,10 @@ Then inside:
 \d User         -- describe table
 SELECT * FROM "User";
 ```
+
+
+## References for Postgresql
+Below are some of the important links related to postgresql setting up locally : 
+* (Database setup on macos)[https://medium.com/@jade.adams517/postgresql-database-set-up-on-macos-pgadmin-and-postegreapp-7a00b7ca8f9c]
+* (Download, Install, and Locally setup Postgresql)[https://talesofdancingcurls.medium.com/how-to-download-install-and-locally-set-up-postgresql-63f9ff4769aa]
+* (Setting Up PostgreSQL and pgAdmin Using Docker — on macOS)[https://medium.com/@mateus2050/setting-up-postgresql-and-pgadmin-using-docker-on-macos-66cd7d275328]
