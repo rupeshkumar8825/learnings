@@ -200,6 +200,9 @@ Refer to the following resources to learn about the error handling in ExpessJs
 * [youtube video 1](https://www.youtube.com/watch?v=EUYnERcOGpA) which talks about the best practices to be followed for the error handling. 
 * [youtube video 2](https://www.youtube.com/watch?v=udvGMDVyz84)
 * [Medium Blog 1](https://medium.com/@sajaldewangan/mastering-40x-error-handling-in-node-js-with-typescript-a-peaceful-approach-eedd8eb99c41)
+* [Medium Blog 2](https://medium.com/@pradeep.tarakar17/error-handling-in-express-the-better-way-1ec1e4853a44)
+
+* [Medium Blog 3](https://blog.devgenius.io/build-a-custom-error-handling-middleware-for-expressjs-78c03087d4e7)
 
 
 By the way the detailed explanation with example code examples is as follows: 
@@ -209,6 +212,16 @@ This section documents standard error-handling patterns, utilities, and best pra
 for a Node.js backend built using TypeScript and Express.
 
 ---
+
+
+## Summary 
+In Express 5, async errors bubble automatically — just write clean code and throw errors. We can use the global error handler middleware. We should always throw errors in the service layer without writing the try catch in the controller. This is because in express 5 onwards suppose if the service layer throws the error then in that case since there is no try catch in controller the error will bubble up and eventually reach the global middleware.
+We only use the try catch in the controller when we need to do some custom handling in case of the controller. After customization we again need to throw the error from the controller which will be eventually captured to global error middleware. 
+
+But generally following is the final Takeaway
+* You do NOT need try-catch for controller errors either
+* Service + Controller errors both bubble automatically
+* Use try-catch ONLY for custom logic, not for forwarding
 
 ## Step 10.1 : Install Required Dependencies
 
@@ -418,7 +431,7 @@ will be called.
 will reach to the global handler itself. 
 * Mainly since the business logics will be present in case of the controller as well as 
 in the services too. so we will let the error bubble up until and unless we want to 
-modify something in the error. In that cas we will catch the error and then throw it again after modifying it. 
+modify something in the error. In that case we will catch the error and then throw it again after modifying it. 
 * In summary we will use the try catch whereever we feel we need to modify the error 
 or we want to show some specific messages to the user. 
 
