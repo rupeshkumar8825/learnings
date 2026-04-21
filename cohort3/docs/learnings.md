@@ -557,6 +557,153 @@ enum Role {
 }
 ```
 
+## CRUD Operations in PRISMA 
+Lets check the examples on how we can do the CRUD operations using PRISMA
+``` ts 
+import prisma from "../config/prisma"
+
+export async function updateUser(email : string, password : string) {
+    // normal update
+    const updatedUser = await prisma.user.update({
+      where : {
+        email : "test@example.com"
+      }, 
+      data : {
+        name : "updated name"
+      }
+    })
+
+    // update many. 
+    const updateMultiUser = await prisma.user.updateMany({
+      where : {
+        email : { contains : "@gmail.com"}
+      }, 
+      data : {
+        name : "Gmail User"
+      }
+    })
+
+}
+
+export async function createUser(email : string, password : string) {
+  const user = await prisma.user.create({
+    data : {
+      email : email, 
+      password : password,
+    }
+  })
+}
+
+export async function deleteUser(email : string) {
+    // delete one
+    const deleteOneResponse = await prisma.user.delete({
+      where : {
+        id : userId
+      }
+    })
+
+    // delete many 
+    const deleteManyResponse = await prisma.user.deleteMany({
+      where : {
+        createdAt : {
+          lt : new Date("2023-01-01")
+        }
+      }
+    })
+}
+
+export async function findUser(email : string) {
+    const user = await prisma.user.findUnique({
+      where : { email : email } 
+    }) 
+
+    // filtering on the basis of some field of the database 
+    const users = await prisma.user.findMany({
+      where : {
+        name : {
+          contains : "rup"
+        }
+      }
+    })
+
+    // advance filtering options 
+    const users = await prisma.user.findMany({
+      where : {
+        AND : [
+          {total : {gt : 100}}
+          {status : "SUCCESS"}
+        ]
+      }
+    })
+
+    // using the or operator in case of database 
+    const users = await prisma.user.findMany({
+      where : {
+        OR : [
+          {name : "Rupesh"}, 
+          {email : {contains : "@gmail.com"}}
+        ]
+      }
+    })
+
+    // find some fields itself 
+    const users = await prisma.user.findMany({
+      select : {
+        email : true, 
+        name : true
+      }
+    })
+
+    // result based on the sorting 
+    const users = await prisma.user.findMany({
+      orderBy: {
+        createdAt : "desc"
+      }
+    })
+
+
+}
+
+
+
+export async function upsertUser(){
+  const upsertUserResponse = await prisma.user.upsert({
+    where : { email : "test@example.com" }, 
+    update : {name : "Updated"}, 
+    create : {
+      email : "test@example.com", 
+      name : "New User"
+    }
+  })
+}
+
+```
+
+
+## PRISMA Transactions 
+Transaction is a set of prisma operations that needs to be done together. If any one of the prisma operation on the database fails then the transaction fails and hence the done changes will be rolled back for this purpose. 
+
+These transactions are generally used in payments, inventory updates, order creation and so on. 
+Let us take an example on how we can use transaction in ts using prisma 
+
+``` ts 
+  await prisma.$transaction(async (tx) => {
+    const order = await tx.order.create({
+      data : {userId, total: 500, status : "PENDING"}
+    })
+
+    await tx.user.update({
+      where : {id : userid}, 
+      data : {name : "Buyer"}
+    })
+  })
+
+
+
+
+```
+
+
 # SQL Injection 
 Usually we write the sql queries in the following format: 
 ``` ts
