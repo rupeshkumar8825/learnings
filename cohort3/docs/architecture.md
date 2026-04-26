@@ -117,4 +117,9 @@ images.forEach(async function(element) {
 The above piece of code was not actually awaiting for the file to be uploaded. But instead the code execution was moving forward. This is because we cannot use foreach with async and await for this purpose. Although the files were uploaded successfully.
 So its better to describe why does this happen in detail for this purpose. 
 
+# Implementing the filter feature using prisma 
+Generally we have to implement the filter based search in the e-commerce websites. To handle such things we use pass the different filters using the query parameters. These parameters are then received in the backend and based on the different filters values we write the custom prisma query to be made. 
+
+Give an example of such an implementation here for this purpose. So that in future we can be aware about such methods to implement the filter algorithm properly for this purpose. 
+
 
