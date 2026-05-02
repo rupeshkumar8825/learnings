@@ -123,3 +123,334 @@ Generally we have to implement the filter based search in the e-commerce website
 Give an example of such an implementation here for this purpose. So that in future we can be aware about such methods to implement the filter algorithm properly for this purpose. 
 
 
+# JOINS in database 
+In websites like ecommerce we generally have to fetch the data from different tables and in postgres or sql we need to use joins too much. 
+So better to explain and learn about LEFT JOINS a lot for this purpose. 
+
+# Handling of onCascade either from DB or from Application layer
+Generally we have different types of references to and from different tables. In such cases we must use it for this purpose and hence this would men
+
+
+# PRISMA Workflow 
+Here’s the mental model + workflows you should know to handle schema changes like a real backend dev (and be interview-ready) with Prisma + PostgreSQL.
+
+Core mental model
+1) There are two “schemas”
+
+
+schema.prisma = your desired data model (source of truth for Prisma)
+
+
+Database schema (tables/columns/FKs/indexes) = what actually exists in Postgres
+
+
+Migrations are the controlled way to move the DB schema from one version to the next.
+Prisma stores migration history in a DB table called _prisma_migrations. 
+
+Prisma commands you must know (and when to use them)
+prisma migrate dev
+Use in local development.
+
+
+Creates a new migration from your Prisma schema changes
+
+
+Applies it to your dev DB
+
+
+Uses a shadow database to detect drift / problems 
+
+
+prisma migrate deploy
+Use in staging/production/CI.
+
+
+Applies migrations that exist in /prisma/migrations
+
+
+Never resets your DB and doesn’t use shadow DB (safer for prod) 
+
+
+prisma db push
+Use for prototyping or when you explicitly don’t want migration history.
+
+
+It “pushes” schema changes to DB without creating migration files
+
+
+Not recommended for team/production workflows 
+
+
+prisma migrate reset
+Dev-only convenience:
+
+
+Drops DB, recreates, replays migrations, runs seed
+
+
+Never use on a DB with valuable data (obviously).
+
+
+prisma migrate diff
+Compares two schemas (DB vs schema vs migrations) and shows what would change. Useful for auditing drift. 
+prisma migrate resolve
+Marks a migration as applied/rolled-back in _prisma_migrations without actually running SQL.
+Used when you applied SQL manually or are reconciling state.
+
+Handling schema changes: the 3 common situations
+A) No important data (early dev / empty DB)
+This is the easiest case.
+Workflow
+
+
+Edit schema.prisma
+
+
+Run:
+npx prisma migrate dev -n <meaningful_name>npx prisma generate
+
+
+If things go sideways, you can do:
+npx prisma migrate reset
+
+
+Interview note: early dev = fast iteration; resets are acceptable.
+
+B) There IS data and you must preserve it (real world / prod-like)
+Now you must think like a DBA.
+Golden rules
+
+
+Never “reset” production
+
+
+Always use migrations (not db push) so changes are reproducible
+
+
+Assume some migrations are “breaking” and require a careful rollout
+
+
+Workflow
+
+
+Change schema.prisma
+
+
+Create a migration:
+npx prisma migrate dev -n <name>
+
+
+Inspect the generated SQL in prisma/migrations/.../migration.sql
+
+
+Test on a copy of production data if possible
+
+
+Deploy:
+npx prisma migrate deploy
+
+
+Key concept: “schema migration” vs “data migration”
+
+
+Schema migration: add column, add FK, change type, add index
+
+
+Data migration: populate new column, backfill, transform existing rows
+
+
+Prisma Migrate handles schema changes; for data migrations, you often:
+
+
+write a one-off script (Node/TS) and run it in deployment, or
+
+
+embed SQL updates in the migration file (carefully).
+
+
+Prisma has an official workflow for customizing migrations (editing migration SQL) when needed. 
+
+C) You are adding Prisma migrations to an existing database
+Typical in interviews: “join Prisma to legacy DB”.
+Workflow
+
+
+Introspect:
+npx prisma db pull
+
+
+Create a baseline migration / align schema with DB
+
+
+From that point onward, Prisma migrations become the source of truth
+
+
+Prisma docs cover integrating migrate into an existing project. 
+
+The big “gotchas” you must be able to talk about
+1) Adding a NOT NULL column to a table with existing rows
+If you do:
+newField String
+DB will reject it because existing rows need a value.
+Safe patterns
+
+
+Add it as nullable first: String?
+
+
+Backfill data
+
+
+Then make it required in a later migration
+
+
+This is a classic two-step (sometimes three-step) migration pattern.
+
+2) Changing column types with data present
+Example: String → Int, Decimal → Int, etc.
+
+
+Might fail if existing data can’t be cast
+
+
+Might lock table (downtime risk)
+
+
+Interview-ready answer: do it in stages, validate/clean data, then switch.
+
+3) Adding foreign keys / cascades after you already have data
+When you add onDelete: Cascade or add a new FK, the migration will alter constraints.
+
+
+If existing data violates the constraint, migration fails.
+
+
+You must clean data first.
+
+
+Prisma’s referential actions docs describe the behavior and options (Cascade, Restrict, SetNull, etc.). 
+
+4) Drift (DB changed manually vs migrations)
+Prisma detects “drift” in dev via shadow DB. 
+In production, drift can happen if someone hotfixes the DB.
+Interview-ready handling
+
+
+Use migrate diff to detect mismatch 
+
+
+Decide whether to:
+
+
+create a new migration that matches reality, or
+
+
+revert the manual change, or
+
+
+use migrate resolve if the migration state differs from actual DB
+
+
+
+
+
+5) Zero-downtime migration mindset (important)
+For high-traffic systems, avoid “big bang” schema changes.
+Typical safe rollout strategy
+
+
+Add new columns/tables in a backward-compatible way
+
+
+Deploy app that writes to both old & new (or writes new)
+
+
+Backfill data
+
+
+Switch reads to new
+
+
+Remove old in a later migration
+
+
+Even if you don’t implement it fully, being able to explain this matters a lot.
+
+A simple “decision guide” (interview-friendly)
+
+
+Solo dev / early stage / OK to lose data? → migrate dev, reset acceptable
+
+
+Team / CI / production? → migrate dev to create migrations, migrate deploy to apply
+
+
+Prototype quickly and don’t care about migration history? → db push (but avoid long-term) 
+
+
+Legacy DB already exists? → db pull first, then baseline + migrate 
+
+
+
+What you should say if asked “how do you handle schema changes in production?”
+A strong answer:
+
+
+“We use Prisma migrations committed to git.”
+
+
+“We generate migrations in dev, review SQL, run tests on staging.”
+
+
+“We deploy with prisma migrate deploy in CI.”
+
+
+“For breaking changes (NOT NULL, type changes), we do phased migrations and backfills.”
+
+
+“We avoid manual DB changes; if drift happens we use migrate diff and reconcile carefully.”
+
+
+(That aligns exactly with Prisma’s intended deploy model.) 
+
+If you want, tell me:
+
+
+are you using Prisma relationMode = foreignKeys (default for Postgres) or prisma mode,
+
+
+and whether you deploy on VPS / Docker / serverless,
+
+
+…and I’ll outline a clean CI/CD checklist (including when to run generate, where to run deploy, and how to do safe backfills).
+
+
+# Limitations of Prisma 
+There are some known limitations of prisma. For example some of the complicated queries cannot be written be in Prisma due to lack of support for something. 
+Need to find such examples where prisma query writing is almost not possible and then post it here for future reference and understanding for this purpose. 
+
+# Example Complex Queries in POSTGRESQL 
+Write down some of the most common complex queries that we should understand or atleast should know how to write. Listing down such queries would help us to revise faster. 
+For example we could include the queries which uses the JOINs and other complex stuff. 
+
+
+# Explanation of the system architecture of the Stripe based payment 
+Almost all the applications either it being a web app or a SAAS app we need to integrate the payments gateway with our apps to be able to implement a seamless, secure and compliant payment systems. For this there are multiple ways to do this. One such way is to use the Stripe payment gateway. Even though if we can choose between different payment gateways but at the end the underlying concepts would be almost similar. 
+Its better to describe the complete architecture and the complete design here with examples. 
+Complete payment lifecycle (sequence)
+* Client creates order (or order already exists).
+* Client → Server: “Create payment for orderId=123”
+* Server:
+  *  fetch order + items
+  * compute amount
+  * create PaymentIntent in Stripe
+  * save payment_intent_id in DB
+  * return client_secret
+* Client → Stripe SDK: confirm payment using client_secret
+* Stripe processes payment asynchronously (may take time; may require 3DS, UPI collect, etc.)
+* Stripe → Server webhook: payment_intent.succeeded (or failed)
+* Server updates DB to PAID + records payment, triggers fulfillment (deliver access, ship, etc.)
+* Client shows final status by fetching order status (or via websockets)
+
+## Resources 
+* [Medium Blog 1](https://okraks.medium.com/accept-payments-seamlessly-with-stripe-a-developers-integration-guide-9102c4aaa4be)
