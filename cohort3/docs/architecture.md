@@ -435,6 +435,8 @@ For example we could include the queries which uses the JOINs and other complex 
 
 
 # Explanation of the system architecture of the Stripe based payment 
+
+Tags to search this : - Stripe Integration, Payment Integration
 Almost all the applications either it being a web app or a SAAS app we need to integrate the payments gateway with our apps to be able to implement a seamless, secure and compliant payment systems. For this there are multiple ways to do this. One such way is to use the Stripe payment gateway. Even though if we can choose between different payment gateways but at the end the underlying concepts would be almost similar. 
 Its better to describe the complete architecture and the complete design here with examples. 
 Complete payment lifecycle (sequence)
@@ -452,5 +454,21 @@ Complete payment lifecycle (sequence)
 * Server updates DB to PAID + records payment, triggers fulfillment (deliver access, ship, etc.)
 * Client shows final status by fetching order status (or via websockets)
 
+## Important Stripe  Commands 
+After successfull payment the Stripe sends back the webhook to the server. We give the server payment confirmation webhook url 
+to the stripe and then our server will validate whether the payment intent which we got is really success or not. 
+Depending on whether it was success or not we take actions on the database for this purpose. 
+
+Now when the server is not hosted we run the server in our localhost and hence the stripe webhook server will not be able 
+to reach to at our local running server. For that we use the following command to listen to the webhook request from stripe 
+and this webhook received is then transferred to our the local server running port. 
+``` bash 
+stripe listen  --forward-to localhost:4000/api/v1/payments/webhook
+```
+
+
 ## Resources 
 * [Medium Blog 1](https://okraks.medium.com/accept-payments-seamlessly-with-stripe-a-developers-integration-guide-9102c4aaa4be)
+* [ChatGPT](https://chatgpt.com/c/69f63923-4a54-8320-923e-4684363c2113)
+* [Medium Blog 2](https://medium.com/@sindhujad6/how-to-set-up-stripe-cli-for-local-development-step-by-step-guide-for-developers-309b0a3a2244)
+* [Medium Blog 3 :- Explaining the architecture of the stripe payment systems](https://okraks.medium.com/accept-payments-seamlessly-with-stripe-a-developers-integration-guide-9102c4aaa4be)
