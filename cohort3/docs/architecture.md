@@ -472,3 +472,8 @@ stripe listen  --forward-to localhost:4000/api/v1/payments/webhook
 * [ChatGPT](https://chatgpt.com/c/69f63923-4a54-8320-923e-4684363c2113)
 * [Medium Blog 2](https://medium.com/@sindhujad6/how-to-set-up-stripe-cli-for-local-development-step-by-step-guide-for-developers-309b0a3a2244)
 * [Medium Blog 3 :- Explaining the architecture of the stripe payment systems](https://okraks.medium.com/accept-payments-seamlessly-with-stripe-a-developers-integration-guide-9102c4aaa4be)
+
+
+# Concepts related to the Promise, callbacks, async await and so on
+Need to clear concepts related to promise, callbacks, async and await. Need to know when to use these and how can we use these. Post here the example codes so that we can refer these 
+at the time of revision for this purpose

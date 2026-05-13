@@ -195,3 +195,90 @@ function Card({children}){
 ```
 
 
+# React + Tailwind Project Setup 
+Lets see how can we quickly set up the react + tailwind css project in typescript
+
+
+Here’s the clean, standard way to start a React + TypeScript + Tailwind CSS frontend in 2026: Vite + React + TS + Tailwind.
+
+1) Create the React + TS project (Vite)
+``` bash
+npm create vite@latest my-frontend -- --template react-ts
+cd my-frontend
+npm install
+```
+
+Run it once to confirm everything works:
+``` bash
+npm run dev
+```
+
+2) Add Tailwind CSS
+Install Tailwind + PostCSS + Autoprefixer:
+``` bash
+npm install -D tailwindcss postcss autoprefixer
+npx tailwindcss init -p
+```
+
+This creates:
+``` bash
+tailwind.config.js
+postcss.config.js
+```
+
+3) Configure Tailwind paths
+Open tailwind.config.js and set content like this:
+``` ts
+/** @type {import('tailwindcss').Config} */
+export default {
+  content: ["./index.html", "./src/**/*.{js,ts,jsx,tsx}"],
+  theme: {
+    extend: {},
+  },
+  plugins: [],
+};
+
+```
+
+4) Add Tailwind directives to CSS
+Open src/index.css (or src/main.css depending on template) and put:
+``` css
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+```
+
+Ensure your entry file imports this CSS:
+src/main.tsx should have something like:
+
+``` tsx
+import "./index.css";
+```
+
+
+Path A (Recommended): Tailwind v4 + Vite plugin (no init -p)
+1) Install Tailwind + the official Vite plugin
+
+From your Vite React TS project root:
+
+npm install tailwindcss @tailwindcss/vite
+
+2) Update vite.config.ts
+import { defineConfig } from "vite";
+import react from "@vitejs/plugin-react";
+import tailwindcss from "@tailwindcss/vite";
+
+export default defineConfig({
+  plugins: [react(), tailwindcss()],
+});
+
+3) Import Tailwind in your CSS
+
+Open src/index.css (or whatever your main CSS is) and put:
+
+@import "tailwindcss";
+
+4) Run
+npm run dev
+
+✅ Done. Tailwind should work immediately.
