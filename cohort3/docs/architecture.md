@@ -477,3 +477,15 @@ stripe listen  --forward-to localhost:4000/api/v1/payments/webhook
 # Concepts related to the Promise, callbacks, async await and so on
 Need to clear concepts related to promise, callbacks, async and await. Need to know when to use these and how can we use these. Post here the example codes so that we can refer these 
 at the time of revision for this purpose
+
+
+# ABSOLUTE AND RELATIVE RELATION
+While working on the frontend part we usually come across the absolute and relative thing. Need to understand about the complete concept related to this. Understand where can we use this and typically for what features and for what purpose we would require this. 
+Also its always better to add some examples related to the relative and absolute uses is preferred for better and faster revision for this purpose
+
+# RECOIL STATE MANAGEMENT
+In react or frontend application we generally require some mechanism to store the global state of some data which can then should be accessible to all of the components of the application. 
+There are various state management libraries which are present. One of them is Recoil. Jot down all the important concepts about the recoil. For example jot down the difference between the atoms and selectors. When to use them. What so special about recoil so that it is now being preferred in the industry. How does this improves the performance of the application. 
+
+Please also add some of the code examples on how to go about setting the state management store for the frontend application using recoil. Futher also mention the code and explain it in detail about how to go about defining the atom and then selectors and then how can we access these atoms and selectors across different components and further how to go about updating the atoms state for this purpose. 
+If we do this then it will be very helpful for a quick revision about the concepts for this purpose
