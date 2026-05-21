@@ -489,3 +489,11 @@ There are various state management libraries which are present. One of them is R
 
 Please also add some of the code examples on how to go about setting the state management store for the frontend application using recoil. Futher also mention the code and explain it in detail about how to go about defining the atom and then selectors and then how can we access these atoms and selectors across different components and further how to go about updating the atoms state for this purpose. 
 If we do this then it will be very helpful for a quick revision about the concepts for this purpose
+Mention everything about the recoil uses where to use atoms and where to use selectors. Please add the example code snippets for the same for a better and fast revision documentation
+
+## Need to learn how the caraousel works
+Generally in frontend applications we often see the usagews of the caraousel which automaticall slides by showing multiple items one by one. In order to implement that we need to know mthe concepts of the transform, translate and so on. These concepts we need to learn at any cost for this purpose. Add an note or example codes on the caraousel component so that we will be able to revise is pretty fast for this purpose
+
+
+# Notes 
+While working with the recoil and the frontend project it is observed that there is a compatibility issue with the react 19 and the recoil. Further safari is not good for development and debugging purpose simply because it does not give us a proper error in detail. Instead we should prefer to use the chrome itself so that we can save our time and can get better errors in detail for this purpose
