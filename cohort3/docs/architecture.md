@@ -490,6 +490,15 @@ There are various state management libraries which are present. One of them is R
 Please also add some of the code examples on how to go about setting the state management store for the frontend application using recoil. Futher also mention the code and explain it in detail about how to go about defining the atom and then selectors and then how can we access these atoms and selectors across different components and further how to go about updating the atoms state for this purpose. 
 If we do this then it will be very helpful for a quick revision about the concepts for this purpose
 Mention everything about the recoil uses where to use atoms and where to use selectors. Please add the example code snippets for the same for a better and fast revision documentation
+
+further mentioning when to use and why to use the selectors would also be helpful for this purpose 
+For example below is one example sceanrio where we should use the selectors : 
+"Write a selector only when derived state is computed from existing atoms and more than one component needs that derived value."
+
+Is it derived from atoms?          → maybe a selector
+Is it used in 2+ components?       → yes, make it a selector
+Is it just wrapping one atom?      → no, read the atom directly
+Is it pure UI logic (labels etc.)? → no, keep it in the component
 `
 ## Need to learn how the caraousel works
 Generally in frontend applications we often see the usagews of the caraousel which automaticall slides by showing multiple items one by one. In order to implement that we need to know mthe concepts of the transform, translate and so on. These concepts we need to learn at any cost for this purpose. Add an note or example codes on the caraousel component so that we will be able to revise is pretty fast for this purpose
@@ -506,6 +515,11 @@ Mention the steps to be performed in order to setup and initialize the react + t
 # Learn about the frontend architecture to follow 
 In the full stack application, while working on the frontend we need to implement UI, api layer , recoils, api layer and so on. Write down teh complete code architecture to follow with separation of concerns. One such case could be the usages of the custom made hooks so that the api related code remains separate with the UI related codes. 
 Give examples to support the argument for this purpose. 
+Basically there could also be multiple layers in the frontend code too some of the layers are as follows : 
+1. Component Layer 
+2. Hook Layer
+3. Atom Layer
 
 # Why to use custom hooks in react js
 mention with proper example explaining a scenario why do we need to use the custom made hooks in the reactjs application while working on a full stack project for this purpose
+
